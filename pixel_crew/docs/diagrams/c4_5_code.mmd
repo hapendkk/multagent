@@ -1,0 +1,59 @@
+classDiagram
+class PixelState {
+  +str brief
+  +dict task
+  +dict route
+  +str generator_model
+  +str ux_notes
+  +str html
+  +str feedback
+  +dict verdict
+  +int attempt
+  +str outcome
+  +list log  (reducer: operator.add)
+}
+class agents {
+  +art_director(state) dict
+  +ux_researcher(state) dict
+  +ui_generator(state) dict
+  +validator(state) dict
+}
+class decision_model {
+  +decide(model, role, context, questions, n_votes) dict
+}
+class router {
+  +route_generator(complexity, product_type) tuple
+  +escalate(model, attempt) tuple
+  +pick_validator(generator_model) str
+  +family(model) str
+}
+class tools {
+  +contrast_ratio(fg, bg) float
+  +check_contrast(html) dict
+  +lint_html(html, product_name, visible_text) dict
+  +name_presence(name, text) str
+  +render_screenshot(html) dict
+  +render_issues(render) tuple
+}
+class runner {
+  +render(html) dict
+  -_oci_config(job_in, job_out) dict
+  -_limits_prefix() list
+}
+class llm {
+  +chat(model, system, user, schema) dict
+  +parse_json(text) dict
+}
+class graph {
+  +build_graph() CompiledGraph
+  +after_art_director(state) str
+  +after_validator(state) str
+}
+graph ..> agents
+graph ..> PixelState
+agents ..> decision_model
+agents ..> router
+agents ..> tools
+agents ..> llm
+decision_model ..> llm
+tools ..> runner

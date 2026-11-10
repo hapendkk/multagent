@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Результаты запусков и телеметрия (генерируются, не код)
+pixel_crew/outputs/
+
+# Память системы (SQLite)
+pixel_crew/memory/*.db
+pixel_crew/memory/*.db-journal
+
+# Отчёты evals (по желанию: можно коммитить summary.md как доказательство)
+pixel_crew/evals/results/
+
+# Временные файлы песочницы
+pixel_crew/outputs/sandbox_jobs/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

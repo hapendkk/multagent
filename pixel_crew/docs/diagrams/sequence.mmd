@@ -1,0 +1,60 @@
+sequenceDiagram
+autonumber
+actor U as Дизайнер
+participant M as main.py
+participant G as LangGraph
+participant AD as Art Director
+participant J as Jev-like (decide)
+participant R as Router
+participant UX as UX Researcher
+participant GEN as UI Generator
+participant V as Validator
+participant T as Tools
+participant S as Sandbox (Job Object)
+participant O as Ollama
+
+U->>M: python main.py "бриф"
+M->>O: GET /api/tags (preflight)
+M->>G: stream(state)
+G->>AD: art_director(state)
+AD->>J: is_ui_request, product_type, complexity
+loop 3 голоса
+  J->>O: chat(llama3.2, schema)
+end
+J-->>AD: значения + confidence
+alt не UI и confidence ≥ 0.7
+  AD-->>G: outcome = rejected
+  G-->>M: END (шлюз 1)
+else UI-запрос
+  AD->>R: route_generator(complexity, type)
+  R-->>AD: light / strong + причина
+  AD->>O: chat(llama3.2, TASK_SCHEMA)
+  AD-->>G: task, route, generator_model
+  G->>UX: ux_researcher(state)
+  UX->>O: chat(generator_model)
+  UX-->>G: ux_notes
+  loop попытка 1..3, пока fail
+    G->>GEN: ui_generator(state)
+    GEN->>R: escalate(model, attempt)
+    GEN->>O: chat(model, HTML)
+    GEN-->>G: html
+    G->>V: validator(state)
+    V->>R: pick_validator(generator_model)
+    V->>T: check_contrast, lint_html
+    V->>S: render (375 и 1280 px)
+    S-->>V: overflow, ошибки JS, скриншоты
+    V->>J: matches_brief, quality
+    loop 5 голосов
+      J->>O: chat(валидатор другого семейства)
+    end
+    alt есть ошибки инструментов
+      V-->>G: fail + точные исправления
+    else confidence < 0.7
+      V-->>G: needs_human
+    else quality ≥ 60 и соответствует брифу
+      V-->>G: pass
+    end
+  end
+  G-->>M: финальное состояние
+end
+M->>U: screen.html, report.json

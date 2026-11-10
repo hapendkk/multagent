@@ -1,0 +1,16 @@
+C4Context
+title System Landscape: Pixel Crew на ноутбуке разработчика
+Person(designer, "Дизайнер / продакт", "Пишет бриф, получает экран")
+Person(reviewer, "Ревьюер", "Решает спорные случаи needs_human")
+Enterprise_Boundary(laptop, "Ноутбук: Windows 10, RTX 4050 6 ГБ") {
+  System(pixel, "Pixel Crew", "Мультиагентная дизайн-студия: бриф → проверенный HTML")
+  System_Ext(ollama, "Ollama", "Локальный инференс LLM на GPU")
+  System_Ext(obs, "Observability", "JSONL в формате OTel: трейсы, логи, метрики, алерты")
+  System_Ext(fs, "Файлы результатов", "outputs/: screen.html, report.json, скриншоты")
+}
+Rel(designer, pixel, "Бриф", "CLI")
+Rel(pixel, designer, "Экран + отчёт")
+Rel(reviewer, pixel, "Решение по needs_human")
+Rel(pixel, ollama, "Запросы к LLM", "HTTP :11434")
+Rel(pixel, obs, "Трейсы, метрики", "OTLP")
+Rel(pixel, fs, "Пишет артефакты")

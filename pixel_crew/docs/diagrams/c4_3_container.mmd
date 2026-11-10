@@ -1,0 +1,21 @@
+C4Container
+title Container: Pixel Crew
+Person(designer, "Дизайнер")
+System_Ext(ollama, "Ollama", "LLM на GPU, Windows-хост")
+System_Boundary(win, "Windows-хост: Pixel Crew") {
+  Container(cli, "CLI", "Python, main.py", "Принимает бриф, печатает шаги, сохраняет отчёт")
+  Container(orch, "Оркестратор агентов", "Python, LangGraph", "Граф агентов, шлюзы, цикл доработки, роутинг")
+  Container(sandbox, "Песочница рендера", "Job Object + Chromium/Playwright", "Лимиты памяти/процессов, песочница Chromium, блокировка сети")
+  ContainerDb(mem, "Память", "InMemorySaver + SQLite", "L1 рабочая, L2 эпизоды, L3 уроки, кэш роутера")
+  ContainerDb(out, "Артефакты", "Файлы outputs/", "screen.html, report.json, скриншоты")
+  Container(kb, "База знаний агентов", "Markdown", "Системные промпты, 9 skills, SOUL-файлы")
+}
+System_Ext(obs, "Observability", "observability.py → outputs/telemetry")
+Rel(designer, cli, "Бриф")
+Rel(cli, orch, "invoke / stream")
+Rel(orch, ollama, "LLM-запросы", "HTTP :11434")
+Rel(orch, sandbox, "HTML на рендер", "Job Object + Chromium")
+Rel(orch, mem, "Читает / пишет")
+Rel(orch, kb, "Загружает промпты и skills")
+Rel(orch, out, "Сохраняет")
+Rel(orch, obs, "Трейсы, метрики", "OTLP")

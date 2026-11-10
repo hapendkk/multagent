@@ -1,0 +1,9 @@
+C4Context
+title System Context: Pixel Crew
+Person(designer, "Дизайнер / продакт", "Автор брифа")
+System(pixel, "Pixel Crew", "Принимает бриф, генерирует экран, проверяет на бриф, WCAG AA и адаптивность")
+System_Ext(ollama, "Ollama (Windows-хост)", "llama3.2 · qwen3.5:4b · gemma4:e2b · phi4-mini")
+System_Ext(obs, "Observability backend", "outputs/telemetry: трейсы, метрики, алерты (OTel-совместимо)")
+Rel(designer, pixel, "Отправляет бриф, получает screen.html и report.json")
+Rel(pixel, ollama, "chat / structured output", "HTTP JSON")
+Rel(pixel, obs, "Телеметрия", "OTLP")

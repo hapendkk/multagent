@@ -1,0 +1,15 @@
+C4Deployment
+title Deployment: ноутбук Windows 10
+Deployment_Node(laptop, "Ноутбук", "Windows 10 Home, 16 ГБ RAM, RTX 4050 6 ГБ") {
+  Deployment_Node(win, "Windows-хост") {
+    Container(ollama, "Ollama", "llama.cpp, CUDA", "Модели Q4_K_M, по одной в VRAM, keep_alive 10m")
+  }
+  Container(app, "Pixel Crew", "Python 3.12, LangGraph", "Оркестратор и агенты")
+  ContainerDb(db, "SQLite + outputs/", "NTFS", "Память и артефакты")
+  Deployment_Node(job, "Sandbox: Job Object", "1 ГБ RAM, 256 процессов, 90 с, kill-on-close") {
+    Container(chrome, "Chromium headless", "Playwright", "Рендер недоверенного HTML, своя песочница + блокировка сети")
+  }
+}
+Rel(app, ollama, "HTTP :11434 (localhost)")
+Rel(app, chrome, "Popen в Job Object")
+Rel(app, db, "read/write")
